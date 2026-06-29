@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "822648646890",
+    "project_id": "device-streaming-f2081c26",
+    "storage_bucket": "device-streaming-f2081c26.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822648646890:android:e908e9aca4511f8de6bb93",
+        "android_client_info": {
+          "package_name": "com.example.foodyperson"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAROdyw78ixeTQiN1sKIPN1Ocos0Zit5fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822648646890:android:19ef2c54ca530fb6e6bb93",
+        "android_client_info": {
+          "package_name": "foodyperson.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAROdyw78ixeTQiN1sKIPN1Ocos0Zit5fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

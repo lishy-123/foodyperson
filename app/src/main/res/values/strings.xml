@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FoodyPerson</string>
+    <!-- Replace this with your actual Web Client ID from Google Cloud Console -->
+    <string name="default_web_client_id">561311106577-dummy.apps.googleusercontent.com</string>
+</resources>
