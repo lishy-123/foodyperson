@@ -85,11 +85,9 @@ fun HomeScreen(
     val allProducts = listOf(
         Product("1", "Zinger Burger", "Fast Food", 550.0, "Delicious Zinger Burger", R.drawable.burger, "20 min"),
         Product("2", "Cheese Pizza", "Fast Food", 1200.0, "Melting Cheese Pizza", R.drawable.pizza, "30 min"),
-        Product("3", "Beef Burger", "Meat", 700.0, "Juicy Beef Burger", R.drawable.burger, "25 min"),
-        Product("4", "Coke", "Drinks", 150.0, "Ice Cold Coca-Cola", "https://img.freepik.com/free-photo/coca-cola-bottle_144627-23467.jpg", "10 min"),
-        Product("5", "Sprite", "Drinks", 150.0, "Refreshing Sprite", "https://img.freepik.com/free-photo/sprite-logo_144627-23472.jpg", "10 min"),
-        Product("6", "Fresh Juice", "Drinks", 200.0, "Refreshing Fresh Orange Juice", R.drawable.logo, "10 min"),
-        Product("7", "Chicken Karahi", "Meat", 1500.0, "Traditional Spicy Chicken Karahi", R.drawable.logo, "40 min")
+        Product("4", "Coke", "Drinks", 150.0, "Ice Cold Coca-Cola", R.drawable.coke, "10 min"),
+        Product("5", "Sprite", "Drinks", 150.0, "Refreshing Sprite", R.drawable.newsprite, "10 min"),
+        Product("6", "Fresh Juice", "Drinks", 200.0, "Refreshing Fresh Orange Juice", R.drawable.logo, "10 min")
     )
 
     val filteredProducts = remember(searchQuery) {
@@ -206,7 +204,6 @@ fun Header(
 @Composable
 fun CategoriesSection(onCategoryClick: (String) -> Unit) {
     val categories = listOf(
-        CategoryItemData("Meat", Icons.Default.Restaurant),
         CategoryItemData("Fast Food", Icons.Default.Fastfood),
         CategoryItemData("Grocery", Icons.Default.LocalGroceryStore),
         CategoryItemData("Drinks", Icons.Default.LocalDrink)
@@ -264,23 +261,12 @@ fun PromoBanner() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "New Year Offer", color = Color.White, fontSize = 14.sp)
                 Text(
-                    text = "30% OFF",
+                    text = "Welcome to your own store",
                     color = Color.White,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Text(text = "16 - 31 Dec", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text("Get Now", fontSize = 12.sp)
-                }
             }
             // Placeholder for promo image
             Icon(

@@ -50,10 +50,10 @@ class MainActivity : ComponentActivity() {
             val mainViewModel: MainViewModel = viewModel()
             FoodyPersonTheme(darkTheme = mainViewModel.isDarkMode) {
                 val navController = rememberNavController()
-                
+
                 // Determine start destination
                 val startDestination = if (com.google.firebase.auth.FirebaseAuth.getInstance().currentUser != null) "home" else "splash"
-                
+
                 Column(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.weight(1f)) {
                         NavHost(navController = navController, startDestination = startDestination) {
@@ -271,7 +271,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
     companion object {
         // Simple way to share selected product/category for this demo
         var currentSelectedProduct: Product? = null

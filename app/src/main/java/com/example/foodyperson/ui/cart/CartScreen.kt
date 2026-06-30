@@ -52,6 +52,7 @@ fun CartScreen(
     var selectedPaymentMethod by remember { mutableStateOf("COD") }
     var deliveryAddress by remember { mutableStateOf("123 Mango Street, South City") }
     var isEditingAddress by remember { mutableStateOf(false) }
+    var showSuccessOverlay by remember { mutableStateOf(false) }
 
     val subtotal = cartItems.sumOf { it.totalPrice }
     val discount = 5.0
@@ -61,179 +62,215 @@ fun CartScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        containerColor = DarkGreenBg,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text(
-                            "My Cart",
-                            color = LightText,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = LightText
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* Menu */ }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = LightText)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp)
-        ) {
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(cartItems) { item ->
-                    CartItemCard(item, onUpdateQuantity)
-                }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            containerColor = DarkGreenBg,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text(
+                                "My Cart",
+                                color = LightText,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = LightText
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* Menu */ }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = LightText)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Delivered to Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 24.dp)
             ) {
-                Text("Delivered to", color = LightText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                IconButton(onClick = { isEditingAddress = !isEditingAddress }) {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    items(cartItems) { item ->
+                        CartItemCard(item, onUpdateQuantity)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Delivered to Section
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Delivered to", color = LightText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    IconButton(onClick = { isEditingAddress = !isEditingAddress }) {
+                        Icon(
+                            if (isEditingAddress) Icons.Default.Check else Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = GreenButton,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                if (isEditingAddress) {
+                    TextField(
+                        value = deliveryAddress,
+                        onValueChange = { deliveryAddress = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                            unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
+                            focusedTextColor = LightText,
+                            unfocusedTextColor = LightText,
+                            cursorColor = GreenButton
+                        ),
+                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
+                    )
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = GreenButton, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(deliveryAddress, color = LightText, fontSize = 14.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Payment Options Section
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Payment Options", color = LightText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Icon(Icons.Default.ArrowForward, contentDescription = null, tint = GreenButton, modifier = Modifier.size(16.dp))
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(
+                        onClick = { selectedPaymentMethod = "Card" },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedPaymentMethod == "Card") OrangePayment else Color.Transparent
+                        ),
+                        border = if (selectedPaymentMethod == "Card") null else BorderStroke(1.dp, LightText)
+                    ) {
+                        Text(
+                            "Credit/Debit", 
+                            color = if (selectedPaymentMethod == "Card") DarkGreenBg else LightText, 
+                            fontSize = 12.sp,
+                            fontWeight = if (selectedPaymentMethod == "Card") FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                    Button(
+                        onClick = { selectedPaymentMethod = "COD" },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedPaymentMethod == "COD") OrangePayment else Color.Transparent
+                        ),
+                        border = if (selectedPaymentMethod == "COD") null else BorderStroke(1.dp, LightText)
+                    ) {
+                        Text(
+                            "Cash on Delivery", 
+                            color = if (selectedPaymentMethod == "COD") DarkGreenBg else LightText, 
+                            fontSize = 12.sp, 
+                            fontWeight = if (selectedPaymentMethod == "COD") FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Summary Section
+                SummaryRowDesign("Sub total", "Rs $subtotal")
+                SummaryRowDesign("Discount applied", "-Rs $discount")
+                SummaryRowDesign("Delivery charge", if (deliveryCharges == 0.0) "Free" else "Rs $deliveryCharges")
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Total", color = LightText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("Rs $total", color = LightText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Checkout Button
+                Button(
+                    onClick = {
+                        if (cartItems.isNotEmpty()) {
+                            showSuccessOverlay = true
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = GreenButton)
+                ) {
+                    Text("Place Order", color = DarkGreenBg, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+
+        if (showSuccessOverlay) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkGreenBg.copy(alpha = 0.95f))
+                    .clickable { 
+                        showSuccessOverlay = false
+                        onCheckoutClick() 
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        if (isEditingAddress) Icons.Default.Check else Icons.Default.Edit,
+                        Icons.Default.CheckCircle,
                         contentDescription = null,
                         tint = GreenButton,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(100.dp)
                     )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            if (isEditingAddress) {
-                TextField(
-                    value = deliveryAddress,
-                    onValueChange = { deliveryAddress = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White.copy(alpha = 0.1f),
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                        focusedTextColor = LightText,
-                        unfocusedTextColor = LightText,
-                        cursorColor = GreenButton
-                    ),
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp)
-                )
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = GreenButton, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(deliveryAddress, color = LightText, fontSize = 14.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Payment Options Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Payment Options", color = LightText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Icon(Icons.Default.ArrowForward, contentDescription = null, tint = GreenButton, modifier = Modifier.size(16.dp))
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = { selectedPaymentMethod = "Card" },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedPaymentMethod == "Card") OrangePayment else Color.Transparent
-                    ),
-                    border = if (selectedPaymentMethod == "Card") null else BorderStroke(1.dp, LightText)
-                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "Credit/Debit", 
-                        color = if (selectedPaymentMethod == "Card") DarkGreenBg else LightText, 
-                        fontSize = 12.sp,
-                        fontWeight = if (selectedPaymentMethod == "Card") FontWeight.Bold else FontWeight.Normal
+                        "order placed successfully",
+                        color = LightText,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                }
-                Button(
-                    onClick = { selectedPaymentMethod = "COD" },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedPaymentMethod == "COD") OrangePayment else Color.Transparent
-                    ),
-                    border = if (selectedPaymentMethod == "COD") null else BorderStroke(1.dp, LightText)
-                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Cash on Delivery", 
-                        color = if (selectedPaymentMethod == "COD") DarkGreenBg else LightText, 
-                        fontSize = 12.sp, 
-                        fontWeight = if (selectedPaymentMethod == "COD") FontWeight.Bold else FontWeight.Normal
+                        "Click anywhere to continue",
+                        color = LightText.copy(alpha = 0.7f),
+                        fontSize = 14.sp
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Summary Section
-            SummaryRowDesign("Sub total", "Rs $subtotal")
-            SummaryRowDesign("Discount applied", "-Rs $discount")
-            SummaryRowDesign("Delivery charge", if (deliveryCharges == 0.0) "Free" else "Rs $deliveryCharges")
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Total", color = LightText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                Text("Rs $total", color = LightText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Checkout Button
-            Button(
-                onClick = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Order proceeded successfully!")
-                    }
-                    onCheckoutClick()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GreenButton)
-            ) {
-                Text("Proceed to Checkout", color = DarkGreenBg, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

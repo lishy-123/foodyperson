@@ -47,8 +47,8 @@ fun CategoryProductsScreen(
             Product("gr7", "Bread", "Grocery", 120.0, "Soft White Bread", R.drawable.bread, "30-60 min")
         )
         "Drinks" -> listOf(
-            Product("dr1", "Coke", "Drinks", 150.0, "Ice Cold Coca-Cola", "https://img.freepik.com/free-photo/coca-cola-bottle_144627-23467.jpg", "10-20 min"),
-            Product("dr2", "Sprite", "Drinks", 150.0, "Refreshing Sprite", "https://img.freepik.com/free-photo/sprite-logo_144627-23472.jpg", "10-20 min"),
+            Product("dr1", "Coke", "Drinks", 150.0, "Ice Cold Coca-Cola", R.drawable.coke, "10-20 min"),
+            Product("dr2", "Sprite", "Drinks", 150.0, "Refreshing Sprite", R.drawable.newsprite, "10-20 min"),
             Product("dr3", "Fresh Juice", "Drinks", 200.0, "Freshly Squeezed Juice", R.drawable.logo, "10-20 min")
         )
         else -> emptyList()
